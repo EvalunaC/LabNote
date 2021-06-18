@@ -117,11 +117,7 @@ _pickle.UnpicklingError: invalid load key, 'v'.
 
 
 
-
-
 # 11/15/2020
-
-
 
 conda create -n myenv
 
@@ -167,7 +163,7 @@ The meaning of values in GDSC data
 
 ![image-20201116015234293](C:\Users\YCHEN42\AppData\Roaming\Typora\typora-user-images\image-20201116015234293.png)
 
-The IC50 and AUC are estimated using a non-linear mixed effect model fitting a sigmoid curve to the experimental dose response data. We are screening a large collection of cell lines with a diverse selection of anti-cancer drugs and consequently observe a wide-range of drug responses in our experimental data. The curve-fitting algorithm readily models sensitivity to a drug that falls within the range of experimental screening concentrations. In many instances however, a significant proportion of cell lines will be only partial responsive or resistant to a given drug within the range of experimental screening concentrations. For completeness we have reported these IC-values but they should be interpreted carefully because the confidence in the reported value is reduced. For certain downstream analyses it may be appropriate to restrict the IC50 value to the reported maximum screening concentration, or use an alternative output such as AUC.
+The IC50 and AUC are estimated using a non-linear mixed effect model fitting a sigmoid curve to the experimental dose response data. We are screening a large collection of cell lines with a diverse selection of anti-cancer drugs and consequently observe a wide-range of drug responses in our experimental data. The curve-fitting algorithm readily models sensitivity to a drug that falls within the range of experimental screening concentrations. In many instances however, a significant proportion of cell lines will be only partial responsive or resistant to a given drug within the range of experimental screening concentrations. For completeness we have reported these IC-values but they should be interpreted carefully because the confidence in the reported value is reduced. For certain downstream analyses it may be appropriate to restrict the IC50 value to the reported maximum screening concentration, or use an alternative output such as AUC. 
 
 
 
@@ -180,6 +176,8 @@ The screening concentration for each compound can be found in the download page.
 **1-GDSC_AUC**
 
 ![image-20201116012127418](C:\Users\YCHEN42\AppData\Roaming\Typora\typora-user-images\image-20201116012127418.png)
+
+percentage of cell **survive**? 
 
 
 
@@ -207,43 +205,129 @@ Before using machine learning method, we need to understand the meaning of the d
 
 ![image-20201116152236753](C:\Users\YCHEN42\AppData\Roaming\Typora\typora-user-images\image-20201116152236753.png)
 
-
-
-
-
-```
- sort -n -k4 -t, orders.csv
-```
-
-| option | explanation                      |
-| :----- | :------------------------------- |
-| `-n`   | sort numerically                 |
-| `-k4`  | sort on the 4th field            |
-| `-t,`  | use comma as the field separator |
-
-
-
 ## Binomial modeling (undergoing)
 
 - Outcome of interest: Drug response AUC (range 0 to 1)
-
 - Predictor: 
   - Cell line, 
   - drug name, GDSC
   - gene symbol, CCLE
   - gene expression level, CCLE
   - **gene symbol*gene expression level**(interaction term) CCLE.
-  
-  
-
-- [ ] match cell lines with rought matching(lowercase, ., "-")
-
-- [ ] match cell line name (paper review)
-- [ ] Now N=635
-- [ ] Imputation paper review
+- Time consuming 
 
 
 
-To Qiang:
+## Ridge (undergoing)
 
-Gene list
+Pro: **Deal with collinearity**
+
+Same input 
+
+
+
+## Lasso and Elastic-Net Regularized Generalized Linear Models (undergoing)
+
+**Shouldn't use mgaussian if violate normality assumption. Use Binomial Models instead.**
+
+![image-20201116155330310](C:\Users\YCHEN42\AppData\Roaming\Typora\typora-user-images\image-20201116155330310.png)
+
+
+
+## Random forest 
+
+- Use Corte´s-Ciriano et al. (2016), predictive performance could in some cases be improved using **a random forest model linked to a measure of statistical confidence in each prediction.** 
+
+![image-20201116155007886](C:\Users\YCHEN42\AppData\Roaming\Typora\typora-user-images\image-20201116155007886.png)
+
+## IDWAS (undergoing)
+
+Authorization required. 
+
+
+
+
+
+**Need to validate:** 
+
+- Multask Elastic Net + PCA Random Forest 
+- Xgboost (normality assumption?) https://xgboost.readthedocs.io/en/latest/R-package/xgboostPresentation.html
+
+
+
+ Youqiong, aski the meaning of AUC
+
+use GR paper validation data to test the performance.
+
+
+
+
+
+## validation Datasets
+
+TCGA_BRCA_Gene fpkm profile tumor symbol.txt 
+
+​	gene patient
+
+clinical TCGA_BRCA_NTE.txt her2 inhibitor 
+
+positive negative equivocal intermediate. 
+
+
+
+
+
+compare code difference: notepad++ plugins compare.
+
+cell line specific to BCRA? 
+
+drug
+
+package needed from jason: glmnet, IDWAS. 
+
+
+
+
+
+language using: Python? R?
+
+CCLE&GDSC cell line intersect # = 635
+
+https://www.datasciencemadesimple.com/in-operator-in-r/
+
+```
+### Create a new variable using %in% operator in R
+
+my_basket1=within(my_basket,{
+IS_DAIRY='NO'
+IS_DAIRY[ITEM_NAME %in% c('Milk',"Curd","Cheese","Paneer")]='YES'
+IS_DAIRY[ITEM_GROUP %in% c("Dairy")]='YES'
+IS_DAIRY[ITEM_GROUP %in% c("Fruit","Vegetable")]='NO'
+})
+
+my_basket1
+```
+
+```
+### Drop column using %in% operator in R
+
+my_basket[, !(colnames(my_basket) %in% c("Tax"))]
+```
+
+```
+### select columns using %in% operator in R
+
+my_basket %>% 
+  select_if(names(.) %in% c('Price', 'ITEM_GROUP', 'ITEM_NAME'))
+```
+
+![image-20201118070726511](C:\Users\YCHEN42\AppData\Roaming\Typora\typora-user-images\image-20201118070726511.png)
+
+
+
+negative binomial
+
+gamma 
+
+beta (r-betareg)
+
